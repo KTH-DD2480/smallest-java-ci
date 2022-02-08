@@ -35,7 +35,7 @@ public class Build {
         this.projectName = projectName;
         this.commitHash = commitHash;
         this.buildDir = buildDir;
-        this.logPath = this.projectDir + "build.log";
+        this.logPath = String.valueOf(Paths.get(projectDir,"/build.log"));
         this.buildStarted = false;
     }
 
