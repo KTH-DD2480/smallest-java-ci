@@ -1,3 +1,5 @@
+package com.group24.CI;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.ServletException;
@@ -9,7 +11,7 @@ import org.eclipse.jetty.server.Request;
 import org.eclipse.jetty.server.handler.AbstractHandler;
 
 /** 
- Skeleton of a ContinuousIntegrationServer which acts as webhook
+ Skeleton of a com.group24.CI.ContinuousIntegrationServer which acts as webhook
  See the Jetty documentation for API documentation of those classes.
 */
 public class ContinuousIntegrationServer extends AbstractHandler

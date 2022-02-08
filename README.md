@@ -26,14 +26,14 @@ unzip ngrok-stable-darwin-386.zip
 
 We compile the skeleton the continuous integration server:
 ```
-javac -cp servlet-api-2.5.jar:jetty-all-$JETTY_VERSION.jar ContinuousIntegrationServer.java
+javac -cp servlet-api-2.5.jar:jetty-all-$JETTY_VERSION.jar com.group24.CI.ContinuousIntegrationServer.java
 ```
 
 We run the server on the machine, and we may make it visible on the Internet thanks to [Ngrok](https://ngrok.com/):
 ```
 # open a first terminal window
 JETTY_VERSION=7.0.2.v20100331
-java -cp .:servlet-api-2.5.jar:jetty-all-$JETTY_VERSION.jar ContinuousIntegrationServer
+java -cp .:servlet-api-2.5.jar:jetty-all-$JETTY_VERSION.jar com.group24.CI.ContinuousIntegrationServer
 
 # open a second terminal window
 # this gives you the public URL of your CI server to set in Github
