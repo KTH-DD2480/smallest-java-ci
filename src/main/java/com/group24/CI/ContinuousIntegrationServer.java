@@ -9,6 +9,7 @@ import java.io.IOException;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.Request;
 import org.eclipse.jetty.server.handler.AbstractHandler;
+import org.eclipse.jetty.util.IO;
 
 /** 
  Skeleton of a com.group24.CI.ContinuousIntegrationServer which acts as webhook
@@ -25,10 +26,13 @@ public class ContinuousIntegrationServer extends AbstractHandler
         response.setContentType("text/html;charset=utf-8");
         response.setStatus(HttpServletResponse.SC_OK);
         baseRequest.setHandled(true);
+        String body = IO.toString(request.getReader());
 
-        System.out.println(target);
+        System.out.println(body);
 
-        // here you do all the continuous integration tasks
+
+
+        // here you do all the continuous integration task
         // for example
         // 1st clone your repository
         // 2nd compile the code
