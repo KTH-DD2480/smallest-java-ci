@@ -42,7 +42,7 @@ public class Build {
     /**
      * Create output stream to write into file
      */
-    public FileOutputStream createLogStream() throws FileNotFoundException {
+    private FileOutputStream createLogStream() throws FileNotFoundException {
         File buildOutputLog = new File(this.logPath);
         return new FileOutputStream(buildOutputLog);
     }
@@ -50,7 +50,7 @@ public class Build {
     /**
      * Create connection to gradle project
      */
-    public ProjectConnection getGradleProjectConnection() throws FileNotFoundException {
+    private ProjectConnection getGradleProjectConnection() throws FileNotFoundException {
         // check if the path is a valid directory
         if (!Files.isDirectory(Paths.get(this.projectDir))) {
             throw new FileNotFoundException("Not a valid directory path");
@@ -76,11 +76,13 @@ public class Build {
             //select tasks to run
             build.forTasks("clean", "build", "test");
 
+            CustomHandler handler = new CustomHandler();
+
             // run the build for the given task
-            build.run();
+            build.run(handler);
             connection.close();
 
-            return true;
+            return handler.isSuccess();
 
         } catch (GradleConnectionException | FileNotFoundException e) {
             e.printStackTrace();
