@@ -34,16 +34,25 @@ public class ContinuousIntegrationServer extends AbstractHandler
         String stringObject = IO.toString(request.getReader());
         JSONObject body = new JSONObject(stringObject);
 
-        /**
-         * TODO:  Parse request depending if it's a commit, push or pull request
-         */
+        if(request.getMethod() == "POST"){
+
+            // Parse the repository URL
+            String repository_url = body.getJSONObject("repository").getString("html_url");
+            // Parse the commit SHA (secure hashing algorithm)
+            String commit_hash = body.getString("after");
+            //Parse the project name
+            String repository_name = body.getJSONObject("repository").getString("full_name");
+
+            // Parse the date & time the push happened.
+            String updated_at = body.getJSONObject("repository").getString("updated_at");
+
+        }
 
 
-        // Parse the merge commit SHA (secure hashing algorithm)
-        String merge_commit_sha = body.getJSONObject("pull_request").getString("merge_commit_sha");
 
-        // Parse the repository URL
-        String repository_url = body.getJSONObject("repository").getString("html_url");
+
+
+
 
         // Parse the commit message
         //String branch_name = body.getJSONArray("commit").getString("")
