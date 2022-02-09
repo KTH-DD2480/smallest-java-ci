@@ -32,11 +32,21 @@ public class ContinuousIntegrationServer extends AbstractHandler
         response.setStatus(HttpServletResponse.SC_OK);
         baseRequest.setHandled(true);
         String stringObject = IO.toString(request.getReader());
+        JSONObject body = new JSONObject(stringObject);
+
+        /**
+         * TODO:  Parse request depending if it's a commit, push or pull request
+         */
+
+
         // Parse the merge commit SHA (secure hashing algorithm)
+        String merge_commit_sha = body.getJSONObject("pull_request").getString("merge_commit_sha");
 
-        String merge_commit_sha = new JSONObject(stringObject).getJSONObject("pull_request").getString("merge_commit_sha");
-        //System.out.println(hej);
+        // Parse the repository URL
+        String repository_url = body.getJSONObject("repository").getString("html_url");
 
+        // Parse the commit message
+        //String branch_name = body.getJSONArray("commit").getString("")
 
 
         // here you do all the continuous integration task
