@@ -14,7 +14,7 @@ sourceSets {
 }
 
 application {
-    mainClass = 'com.group24.CI.ContinousIntegrationServer'
+    mainClass = 'com.group24.CI.ContinuousIntegrationServer'
 }
 
 dependencies {
