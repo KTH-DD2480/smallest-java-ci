@@ -3,13 +3,18 @@ package com.group24.CI;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.ServletException;
- 
+
 import java.io.IOException;
  
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.Request;
 import org.eclipse.jetty.server.handler.AbstractHandler;
 import org.eclipse.jetty.util.IO;
+import org.eclipse.jetty.util.ajax.JSON;
+import org.eclipse.jetty.util.ajax.JSONEnumConvertor;
+import org.eclipse.jetty.util.ajax.JSONObjectConvertor;
+import org.json.JSONObject;
+
 
 /** 
  Skeleton of a com.group24.CI.ContinuousIntegrationServer which acts as webhook
@@ -26,9 +31,11 @@ public class ContinuousIntegrationServer extends AbstractHandler
         response.setContentType("text/html;charset=utf-8");
         response.setStatus(HttpServletResponse.SC_OK);
         baseRequest.setHandled(true);
-        String body = IO.toString(request.getReader());
+        String stringObject = IO.toString(request.getReader());
+        // Parse the merge commit SHA (secure hashing algorithm)
 
-        System.out.println(body);
+        String merge_commit_sha = new JSONObject(stringObject).getJSONObject("pull_request").getString("merge_commit_sha");
+        //System.out.println(hej);
 
 
 
