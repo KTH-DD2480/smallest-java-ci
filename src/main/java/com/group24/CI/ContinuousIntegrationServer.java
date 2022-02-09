@@ -58,12 +58,11 @@ public class ContinuousIntegrationServer extends AbstractHandler
 
             // create folder to save cloned repos
             String projectPath = System.getProperty("user.dir");
-            String repoFolderPath = String.valueOf(Paths.get(projectPath, "repos", repository_name));
-            File repoFolderFile = new File(repoFolderPath);
-            if (!repoFolderFile.exists()) repoFolderFile.mkdirs();
+            String repoFolderPath = String.valueOf(Paths.get(projectPath, "repos"));
+            String buildProjectPath = String.valueOf(Paths.get(projectPath, "repos", repository_name));
 
-            cloner = new CloneRepository(repository_url, repoFolderPath);
-            builder = new Build(repoFolderPath, repository_name, commit_hash,repoFolderPath);
+            cloner = new CloneRepository(repository_url, repoFolderPath, repository_name);
+            builder = new Build(buildProjectPath, repository_name, commit_hash, buildProjectPath);
 
             boolean buildSuccessful=false;
             boolean cloneSuccessful = cloner.cloneRepository();
