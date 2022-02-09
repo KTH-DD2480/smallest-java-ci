@@ -1,68 +1,65 @@
-The smallest Java Continuous Integration server for Github
-===========================================================
+# Gradle Continuous Integration Server
+<img align="right" width="150" height="150" src="https://cdn0.iconfinder.com/data/icons/people-occupations-icons-rounded/110/Construction-Worker-4-512.png">
 
-Here is a tiny CI server skeleton implemented in Java for educational purposes. It is meant to be called as webhook by Github. The HTTP part of it is based on Jetty.
+### DD2480 | Assignment 2 | Group 24
 
-We assume here that you have a standard Linux machine (eg with Ubuntu), with Java installed.
+[![CI Build](https://github.com/lucianozapata/DD2480VT221/actions/workflows/gradle.yml/badge.svg)](https://github.com/lucianozapata/smallest-java-ci/actions/workflows/gradle.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-We first checkout this repository:
-```
-git clone https://github.com/monperrus/smallest-java-ci
-cd smallest-java-ci
-```
+## Summary
 
-We then download the required dependencies:
-```
-JETTY_VERSION=7.0.2.v20100331
-wget -U none https://repo1.maven.org/maven2/org/eclipse/jetty/aggregate/jetty-all/$JETTY_VERSION/jetty-all-$JETTY_VERSION.jar
-wget -U none https://repo1.maven.org/maven2/javax/servlet/servlet-api/2.5/servlet-api-2.5.jar
-#For linux users: 
-curl -LO --tlsv1 https://bin.equinox.io/c/4VmDzA7iaHb/ngrok-stable-linux-amd64.zip
-unzip ngrok-stable-linux-amd64.zip 
-#For Mac user:
-curl -LO --tlsv1 https://bin.equinox.io/c/4VmDzA7iaHb/ngrok-stable-darwin-386.zip
-unzip ngrok-stable-darwin-386.zip
-```
+This is a simple continous integration server for Gradle projects. The server expects a POST request from Github webhooks. It clones the repository, builds and tests the project. The post response contains information if everything worked.
 
-We compile the skeleton the continuous integration server:
+## Setup 
+
+### Requirements 
+* Java JDK 11
+
+This project can be built with the help of the included wrapper without downloading Gradle.
+### Build 
+```bash
+$ ./gradlew build       (Linux/Mac)
+$ gradlew.bat build     (Windows)
 ```
-javac -cp servlet-api-2.5.jar:jetty-all-$JETTY_VERSION.jar com.group24.CI.ContinuousIntegrationServer.java
+### Tests
+```bash
+$ ./gradlew test        (Linux/Mac)
+$ gradlew.bat test      (Windows)
 ```
 
-We run the server on the machine, and we may make it visible on the Internet thanks to [Ngrok](https://ngrok.com/):
+## Usage
+
+1. Create a tunnel to your localhost on port 8080. One popular tool for that is ngrok.
+2. Setup Github webhook to the tunnel URL.
+3. Start the server 
+```bash
+$ ./gradlew run        (Linux/Mac)
+$ gradlew.bat run      (Windows)
 ```
-# open a first terminal window
-JETTY_VERSION=7.0.2.v20100331
-java -cp .:servlet-api-2.5.jar:jetty-all-$JETTY_VERSION.jar com.group24.CI.ContinuousIntegrationServer
+4. Commit, Push or redeliver webhook POST request from a Gradle project. 
 
-# open a second terminal window
-# this gives you the public URL of your CI server to set in Github
-# copy-paste the forwarding URL "Forwarding                    http://8929b010.ngrok.io -> localhost:8080"
-# note that this url is short-lived, and is reset everytime you run ngrok
-./ngrok http 8080
+## Documentation 
 
+The JavaDoc documentation can be found [here](https://lucianozapata.github.io/smallest-java-ci). <br>
+To generate the documentation locally:
+```bash
+$ ./gradlew javadoc     (Linux/Mac)
+$ gradlew.bat javadoc   (Windows)
 ```
+To open the documentation, open build/docs/javadoc/index.html with your browser.
 
-We configure our Github repository:
+## Statement of contributions
 
-* go to `Settings >> Webhooks`, click on `Add webhook`.
-* paste the forwarding URL (eg `http://8929b010.ngrok.io`) in field `Payload URL`) and send click on `Add webhook`. In the simplest setting, nothing more is required.
+| Name      |                          Contributions                          |
+|:----------|:---------------------------------------------------------------:|
+| Yilin Chang    |  Git-Handler		|
+| Nikolai Limbrunner |	Build-Handler						|
+| Pontus Persman | Gradle-skeleton  			 |
+| Rafi Youssef | Git-Handler              |
+| Luciano Zapata | Request-Parsing     		|
 
-We test that everything works:
+All members contributed to the unit tests and the utility functions used for geometric calculations.
 
-* go to <http://localhost:8080> tp check that the CI server is running locally
-* go to your Ngrok forwarding URL (eg <http://8929b010.ngrok.io>) to check that the CI server is visible from the internet, hence visible from Github
-* make a commit in your repository
-* observe the result, in two ways:
-  * locally: in the console of your first terminal window, observe the requested URL printed on the console
-  * on github: go to `Settings >> Webhooks` in your repo, click on your newly created webhook, scroll down to "Recent Deliveries", click on the last delivery and the on the `Response tab`, you'll see the output of your server `CI job done`
-  * on ngrok: raise the terminal window with Ngrok, and you'll also the see URLs requested by Github
+## Ways of working (Essence)
 
-We shutdown everything:
-
-* `Ctrl-C` in the ngrok terminal window
-* `Ctrl-C` in the ngrok java window
-* delete the webhook in the webhook configuration page.
-
-Notes:
-* by default, Github delivers a `push` JSON payloard, documented here: <https://developer.github.com/v3/activity/events/types/#pushevent>, this information can be used to get interesting information about the commit that has just been pushed.
+# TODO
