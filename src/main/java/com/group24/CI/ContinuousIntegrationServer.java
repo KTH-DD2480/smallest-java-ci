@@ -10,14 +10,13 @@ import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.Request;
 import org.eclipse.jetty.server.handler.AbstractHandler;
 import org.eclipse.jetty.util.IO;
-<<<<<<< HEAD
-=======
+
 import org.eclipse.jetty.util.ajax.JSON;
 import org.eclipse.jetty.util.ajax.JSONEnumConvertor;
 import org.eclipse.jetty.util.ajax.JSONObjectConvertor;
 import org.json.JSONObject;
 
->>>>>>> 1ab44024330b6989de3d7d336ec68106209a4cd3
+
 
 /** 
  Skeleton of a com.group24.CI.ContinuousIntegrationServer which acts as webhook
@@ -34,14 +33,7 @@ public class ContinuousIntegrationServer extends AbstractHandler
         response.setContentType("text/html;charset=utf-8");
         response.setStatus(HttpServletResponse.SC_OK);
         baseRequest.setHandled(true);
-<<<<<<< HEAD
-        String body = IO.toString(request.getReader());
 
-        System.out.println(body);
-
-
-
-=======
         String stringObject = IO.toString(request.getReader());
         JSONObject body = new JSONObject(stringObject);
 
@@ -67,9 +59,6 @@ public class ContinuousIntegrationServer extends AbstractHandler
 
         // Parse the commit message
         //String branch_name = body.getJSONArray("commit").getString("")
-
-
->>>>>>> 1ab44024330b6989de3d7d336ec68106209a4cd3
         // here you do all the continuous integration task
         // for example
         // 1st clone your repository
