@@ -33,8 +33,8 @@ public class ContinuousIntegrationServer extends AbstractHandler
         response.setContentType("text/html;charset=utf-8");
         response.setStatus(HttpServletResponse.SC_OK);
         baseRequest.setHandled(true);
-//        String stringObject = IO.toString(request.getReader());
-//        JSONObject body = new JSONObject(stringObject);
+        String stringObject = IO.toString(request.getReader());
+        JSONObject body = new JSONObject(stringObject);
 
         CloneRepository cloner;
         Build builder;
@@ -42,36 +42,35 @@ public class ContinuousIntegrationServer extends AbstractHandler
         if(request.getMethod() == "POST"){
 
             // Parse the repository URL
-//            String repository_url = body.getJSONObject("repository").getString("html_url");
-//            // Parse the commit SHA (secure hashing algorithm)
-//            String commit_hash = body.getString("after");
-//            //Parse the project name
-//            String repository_name = body.getJSONObject("repository").getString("full_name");
-//
-//            // Parse the date & time the push happened.
-//            String updated_at = body.getJSONObject("repository").getString("updated_at");
+            String repository_url = body.getJSONObject("repository").getString("clone_url");
+            // Parse the commit SHA (secure hashing algorithm)
+           String commit_hash = body.getString("after");
+            //Parse the project name
+           String repository_name = body.getJSONObject("repository").getString("full_name");
 
+            // Parse the date & time the push happened.
+           String updated_at = body.getJSONObject("repository").getString("updated_at");
 
-            String repository_url = "https://github.com/lucianozapata/DD2480VT221";
-            String repository_name= "DD2480VT221";
-            String commit_hash = "12345678abcd";
 
             // create folder to save cloned repos
-            String projectPath = System.getProperty("user.dir");
-            String repoFolderPath = String.valueOf(Paths.get(projectPath, "repos"));
-            String buildProjectPath = String.valueOf(Paths.get(projectPath, "repos", repository_name));
+           String projectPath = System.getProperty("user.dir");
+           String repoFolderPath = String.valueOf(Paths.get(projectPath, "repos"));
+           String buildProjectPath = String.valueOf(Paths.get(projectPath, "repos", repository_name));
 
-            cloner = new CloneRepository(repository_url, repoFolderPath, repository_name);
-            builder = new Build(buildProjectPath, repository_name, commit_hash, buildProjectPath);
+           cloner = new CloneRepository(repository_url, repoFolderPath, repository_name);
+           builder = new Build(buildProjectPath, repository_name, commit_hash, buildProjectPath);
 
-            boolean buildSuccessful=false;
-            boolean cloneSuccessful = cloner.cloneRepository();
-            if (cloneSuccessful) {
+           boolean buildSuccessful=false;
+           boolean cloneSuccessful = cloner.cloneRepository();
+           if (cloneSuccessful) {
                buildSuccessful = builder.buildProject();
-            }
+           }
+
             System.out.println("CLONE: " + cloneSuccessful);
             System.out.println("BUILD: " + buildSuccessful);
         }
+
+
 
         // Parse the commit message
         //String branch_name = body.getJSONArray("commit").getString("")
