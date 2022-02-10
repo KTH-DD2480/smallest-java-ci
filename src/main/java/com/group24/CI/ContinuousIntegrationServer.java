@@ -40,6 +40,8 @@ public class ContinuousIntegrationServer extends AbstractHandler
         Build builder;
         History history = History.getHistoryInstance();
 
+        DiscordBot discordBot = new DiscordBot();
+
         if(request.getMethod() == "POST"){
 
             // Parse the repository URL
@@ -73,6 +75,10 @@ public class ContinuousIntegrationServer extends AbstractHandler
             String buildLogs = buildSuccessful ? "Success" : "Failure";
             BuildReport report = new BuildReport(repository_name, "master",commit_hash, buildLogs);
             history.addReportToHistory(report);
+
+            discordBot.sendMsg("Repository: " + repository_name +
+                             " || Commit: " + commit_hash.substring(0,12)
+                           + " || Build: " + buildSuccessful);
         }
 
 
