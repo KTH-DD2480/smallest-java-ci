@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Paths;
 
+import org.apache.log4j.Logger;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.gradle.internal.impldep.org.apache.commons.io.FileUtils;
@@ -12,7 +13,7 @@ import org.gradle.internal.impldep.org.apache.commons.io.FileUtils;
  * Class to clone a repo to a designated path
  */
 public class CloneRepository {
-
+    private static final Logger logger = Logger.getLogger(CloneRepository.class);
     // The repository url
     String repoUrl;
     // The local path of the clone destination
@@ -45,14 +46,17 @@ public class CloneRepository {
                     .setURI(repoUrl)
                     .setDirectory(Paths.get(repoPath).toFile())
                     .call();
-            System.out.println("Completed Cloning");
+           // System.out.println("Completed Cloning");
+            logger.info("Completed Cloning");
             return true;
         } catch (GitAPIException e) {
-            System.out.println("Exception occurred while cloning repo");
+            //System.out.println("Exception occurred while cloning repo");
+            logger.error("Exception occurred while cloning repo",e);
             e.printStackTrace();
             return false;
         } catch (IOException e) {
-            System.out.println("Exception occurred while deleting the repository");
+           // System.out.println("Exception occurred while deleting the repository");
+            logger.error("Exception occurred while deleting the repository");
             e.printStackTrace();
             return false;
         }

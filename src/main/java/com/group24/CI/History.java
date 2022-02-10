@@ -3,6 +3,7 @@ package com.group24.CI;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import kotlin.collections.ArrayDeque;
+import org.apache.log4j.Logger;
 
 import java.io.File;
 import java.io.IOException;
@@ -18,7 +19,7 @@ import java.util.List;
  * Class to write build reports into json file.
  * */
 public class History {
-
+    private static final Logger logger = Logger.getLogger(History.class);
     Gson gson;
     Path filePath;
     Writer writer;
@@ -49,8 +50,10 @@ public class History {
                 this.reader = Files.newBufferedReader(this.filePath);
                 this.reportList = gson.fromJson(reader, new TypeToken<List<BuildReport>>() {}.getType());
                 this.reader.close();
+                logger.info("Successful read");
             } catch (IOException e) {
                 e.printStackTrace();
+                logger.error("failed to read",e);
             }
         } else {
             this.reportList = new ArrayList<BuildReport>();
@@ -79,8 +82,10 @@ public class History {
             this.writer = Files.newBufferedWriter(this.filePath);
             this.gson.toJson(this.reportList, this.writer);
             this.writer.close();
+            logger.info("Successful write into json history");
         } catch (IOException e) {
             e.printStackTrace();
+            logger.error("failed to write into json history");
         }
     }
 }

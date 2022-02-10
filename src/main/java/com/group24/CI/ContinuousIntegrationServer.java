@@ -16,6 +16,8 @@ import org.eclipse.jetty.util.ajax.JSON;
 import org.eclipse.jetty.util.ajax.JSONEnumConvertor;
 import org.eclipse.jetty.util.ajax.JSONObjectConvertor;
 import org.json.JSONObject;
+import java.text.MessageFormat;
+import org.apache.log4j.Logger;
 
 
 /** 
@@ -24,6 +26,7 @@ import org.json.JSONObject;
 */
 public class ContinuousIntegrationServer extends AbstractHandler
 {
+    private static final Logger logger = Logger.getLogger(ContinuousIntegrationServer.class);
     public void handle(String target,
                        Request baseRequest,
                        HttpServletRequest request,
@@ -66,8 +69,10 @@ public class ContinuousIntegrationServer extends AbstractHandler
                buildSuccessful = builder.buildProject();
            }
 
-            System.out.println("CLONE: " + cloneSuccessful);
-            System.out.println("BUILD: " + buildSuccessful);
+            //System.out.println("CLONE: " + cloneSuccessful);
+            logger.info("Successfully CLONE");
+            //System.out.println("BUILD: " + buildSuccessful);
+            logger.info("Successfully BUILD");
         }
 
 
@@ -81,14 +86,20 @@ public class ContinuousIntegrationServer extends AbstractHandler
         // 2nd compile the code
 
         response.getWriter().println("CI job done");
+        logger.info("Successfully handled POST request");
     }
  
     // used to start the CI server in command line
     public static void main(String[] args) throws Exception
     {
-        Server server = new Server(8080);
-        server.setHandler(new ContinuousIntegrationServer()); 
-        server.start();
-        server.join();
+        try {
+            Server server = new Server(8080);
+            server.setHandler(new ContinuousIntegrationServer());
+            server.start();
+            server.join();
+        }
+        catch (Exception e) {
+            logger.error("Something went wrong while running the CI-Server", e);
+    }
     }
 }

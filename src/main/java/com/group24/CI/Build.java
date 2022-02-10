@@ -1,5 +1,6 @@
 package com.group24.CI;
 
+import org.apache.log4j.Logger;
 import org.gradle.tooling.*;
 
 import java.io.File;
@@ -8,13 +9,13 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.file.*;
 import java.util.Objects;
-
+import org.apache.log4j.Logger;
 /**
  * Class to build gradle project.
  * This classes uses the gradle tooling api.
  */
 public class Build {
-
+    private static final Logger logger = Logger.getLogger(Build.class);
     private final String projectDir;
     private final String projectName;
     private final String logPath;
@@ -86,6 +87,7 @@ public class Build {
 
         } catch (GradleConnectionException | FileNotFoundException e) {
             e.printStackTrace();
+            logger.error("Gradle connection Exception or file not found ", e);
         }
         return false;
     }

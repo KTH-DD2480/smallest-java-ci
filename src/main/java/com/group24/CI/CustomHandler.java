@@ -1,5 +1,6 @@
 package com.group24.CI;
 
+import org.apache.log4j.Logger;
 import org.gradle.tooling.GradleConnectionException;
 import org.gradle.tooling.ResultHandler;
 
@@ -7,7 +8,7 @@ import org.gradle.tooling.ResultHandler;
  * Async custom handler with callbacks on the build process0
  * */
 public class CustomHandler implements ResultHandler<Object> {
-
+    private static final Logger logger = Logger.getLogger(CustomHandler.class);
     private boolean success;
 
     /**
@@ -21,16 +22,19 @@ public class CustomHandler implements ResultHandler<Object> {
     @Override
     public void onComplete(Object o) {
         // TODO replace with logger
-        System.out.println("***** Success *****");
+       // System.out.println("***** Success *****");
+        logger.info("***** Success *****");
         this.success = true;
     }
 
     @Override
     public void onFailure(GradleConnectionException e) {
         // TODO replace with logger
-        System.out.println("***** Success *****");
-        System.out.println("***** Failure *****");
-        System.out.println(e.getMessage());
+        //System.out.println("***** Success *****");
+        logger.info("***** Success *****");
+       // System.out.println("***** Failure *****");
+        logger.info("***** Failure *****",e);
+       // System.out.println(e.getMessage());
         this.success = false;
     }
 }
