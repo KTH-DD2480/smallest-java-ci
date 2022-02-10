@@ -38,6 +38,7 @@ public class ContinuousIntegrationServer extends AbstractHandler
 
         CloneRepository cloner;
         Build builder;
+        History history = History.getHistoryInstance();
 
         if(request.getMethod() == "POST"){
 
@@ -68,6 +69,10 @@ public class ContinuousIntegrationServer extends AbstractHandler
 
             System.out.println("CLONE: " + cloneSuccessful);
             System.out.println("BUILD: " + buildSuccessful);
+
+            String buildLogs = buildSuccessful ? "Success" : "Failure";
+            BuildReport report = new BuildReport(repository_name, "master",commit_hash, buildLogs);
+            history.addReportToHistory(report);
         }
 
 
