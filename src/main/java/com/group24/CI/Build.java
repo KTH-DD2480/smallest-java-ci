@@ -5,9 +5,7 @@ import org.gradle.tooling.*;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.io.IOException;
 import java.nio.file.*;
-import java.util.Objects;
 
 /**
  * Class to build gradle project.
@@ -15,35 +13,36 @@ import java.util.Objects;
  */
 public class Build {
 
-    private final String projectDir;
-    private final String projectName;
-    private final String logPath;
+    private final String repoDir;
+    private final String repoName;
+    private final String branch;
     private final String commitHash;
-    private final String buildDir;
-    private final boolean buildStarted;
+    private final String logFilePath;
+    private final Boolean success;
 
     /**
      * Constructor.
-     *
-     * @param projectDir  path of the gradle project.
-     * @param projectName name of the gradle project.
-     * @param commitHash  hash of the commit (determines folder name).
-     * @param buildDir    path where the build artifacts are saved.
      */
-    public Build(String projectDir, String projectName, String commitHash, String buildDir) {
-        this.projectDir = projectDir;
-        this.projectName = projectName;
+    public Build(String repoDir, String repoName, String commitHash, String branch) {
+        this.repoDir = repoDir;
+        this.repoName = repoName;
         this.commitHash = commitHash;
-        this.buildDir = buildDir;
-        this.logPath = String.valueOf(Paths.get(projectDir,"/build.log"));
-        this.buildStarted = false;
+        this.branch = branch;
+        this.success = false;
+
+        // create path and folder to save logs in
+        String projectPath = System.getProperty("user.dir");
+        String logFolderPath = String.valueOf(Paths.get(projectPath, "history", "logs", this.commitHash));
+        File logFolder = new File(logFolderPath);
+        if (!logFolder.exists()) logFolder.mkdirs();
+        this.logFilePath = String.valueOf(Paths.get(logFolderPath, "build.logs"));
     }
 
     /**
      * Create output stream to write into file
      */
     private FileOutputStream createLogStream() throws FileNotFoundException {
-        File buildOutputLog = new File(this.logPath);
+        File buildOutputLog = new File(this.logFilePath);
         return new FileOutputStream(buildOutputLog);
     }
 
@@ -52,10 +51,10 @@ public class Build {
      */
     private ProjectConnection getGradleProjectConnection() throws FileNotFoundException {
         // check if the path is a valid directory
-        if (!Files.isDirectory(Paths.get(this.projectDir))) {
+        if (!Files.isDirectory(Paths.get(this.repoDir))) {
             throw new FileNotFoundException("Not a valid directory path");
         }
-        File repoDir = new File(this.projectDir);
+        File repoDir = new File(this.repoDir);
         return GradleConnector.newConnector()
                 .forProjectDirectory(repoDir)
                 .connect();
@@ -88,5 +87,9 @@ public class Build {
             e.printStackTrace();
         }
         return false;
+    }
+
+    public BuildReport generateBuildReport() {
+        return new BuildReport(this.repoName,this.branch, this.commitHash, this.success);
     }
 }

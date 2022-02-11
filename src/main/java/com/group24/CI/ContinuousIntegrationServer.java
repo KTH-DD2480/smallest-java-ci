@@ -55,6 +55,8 @@ public class ContinuousIntegrationServer extends AbstractHandler
             // Parse the date & time the push happened.
            String updated_at = body.getJSONObject("repository").getString("updated_at");
 
+           // TODO parse branch
+           String repository_branch = "master";
 
             // create folder to save cloned repos
            String projectPath = System.getProperty("user.dir");
@@ -62,24 +64,31 @@ public class ContinuousIntegrationServer extends AbstractHandler
            String buildProjectPath = String.valueOf(Paths.get(projectPath, "repos", repository_name));
 
            cloner = new CloneRepository(repository_url, repoFolderPath, repository_name);
-           builder = new Build(buildProjectPath, repository_name, commit_hash, buildProjectPath);
+           builder = new Build(buildProjectPath, repository_name, commit_hash, repository_branch);
 
            boolean buildSuccessful=false;
            boolean cloneSuccessful = cloner.cloneRepository();
+           // TODO checkout branch
+
            if (cloneSuccessful) {
                buildSuccessful = builder.buildProject();
+               BuildReport report = builder.generateBuildReport();
+               history.addReportToHistory(report);
            }
 
             System.out.println("CLONE: " + cloneSuccessful);
             System.out.println("BUILD: " + buildSuccessful);
 
-            String buildLogs = buildSuccessful ? "Success" : "Failure";
-            BuildReport report = new BuildReport(repository_name, "master",commit_hash, buildLogs);
-            history.addReportToHistory(report);
-
+            // TODO add github and mail notification
             discordBot.sendMsg("Repository: " + repository_name +
                              " || Commit: " + commit_hash.substring(0,12)
                            + " || Build: " + buildSuccessful);
+
+
+            // Notify the user if the build whether the build was successful
+            GitStatus status = new GitStatus("lucianozapata", repository_name, commit_hash, String.valueOf(buildSuccessful), "", "");
+            status.sendPost();
+
         }
 
 
@@ -91,8 +100,8 @@ public class ContinuousIntegrationServer extends AbstractHandler
         // for example
         // 1st clone your repository
         // 2nd compile the code
-
         response.getWriter().println("CI job done");
+
     }
  
     // used to start the CI server in command line
