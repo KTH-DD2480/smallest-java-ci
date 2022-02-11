@@ -32,9 +32,9 @@ class HistoryTest {
     @Test
     void addReportToHistory() throws IOException {
         // append to dummy reports to the json file
-        BuildReport firstReport = new BuildReport("DUMMY", "master", "47dea2eefc6d2816cddb3f30689070285491733c", "Build successful");
+        BuildReport firstReport = new BuildReport("Unit-Tests", "master", "47dea2eefc6d2816cddb3f30689070285491733c", true);
         this.history.addReportToHistory(firstReport);
-        BuildReport secondReport = new BuildReport("DUMMY", "develop", "16ab09a55b7666f6ea5462e6460581a0989831c4", "DUMMY Build failed");
+        BuildReport secondReport = new BuildReport("Unit-Tests", "develop", "16ab09a55b7666f6ea5462e6460581a0989831c4", false);
         this.history.addReportToHistory(secondReport);
 
         // reload the reports back from the json

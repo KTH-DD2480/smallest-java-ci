@@ -55,8 +55,13 @@ class BuildTest {
      */
     @Test
     void buildProject() {
-        Build builder = new Build(tmpFolder.toString(), projectName, commitHash, tmpFolder.toString());
+        Build builder = new Build(tmpFolder.toString(), projectName, commitHash, "master");
         boolean success = builder.buildProject();
         assertTrue(success);
+
+        BuildReport report = builder.generateBuildReport();
+        History history = History.getHistoryInstance();
+        history.addReportToHistory(report);
     }
+
 }
