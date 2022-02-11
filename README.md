@@ -1,4 +1,4 @@
-# Gradle Continuous Integration Server
+## Gradle Continuous Integration Server
 <img align="right" width="150" height="150" src="https://cdn0.iconfinder.com/data/icons/people-occupations-icons-rounded/110/Construction-Worker-4-512.png">
 
 ### DD2480 | Assignment 2 | Group 24
