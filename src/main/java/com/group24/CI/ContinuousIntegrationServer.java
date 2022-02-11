@@ -83,6 +83,12 @@ public class ContinuousIntegrationServer extends AbstractHandler
             discordBot.sendMsg("Repository: " + repository_name +
                              " || Commit: " + commit_hash.substring(0,12)
                            + " || Build: " + buildSuccessful);
+
+
+            // Notify the user if the build whether the build was successful
+            GitStatus status = new GitStatus("lucianozapata", repository_name, commit_hash, String.valueOf(buildSuccessful), "", "");
+            status.sendPost();
+
         }
 
 
@@ -94,8 +100,8 @@ public class ContinuousIntegrationServer extends AbstractHandler
         // for example
         // 1st clone your repository
         // 2nd compile the code
-
         response.getWriter().println("CI job done");
+
     }
  
     // used to start the CI server in command line
