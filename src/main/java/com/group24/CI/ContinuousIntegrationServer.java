@@ -11,6 +11,7 @@ import java.nio.file.Paths;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.Request;
 import org.eclipse.jetty.server.handler.AbstractHandler;
+import org.eclipse.jetty.server.handler.ResourceHandler;
 import org.eclipse.jetty.util.IO;
 import org.eclipse.jetty.util.ajax.JSON;
 import org.eclipse.jetty.util.ajax.JSONEnumConvertor;
@@ -92,8 +93,17 @@ public class ContinuousIntegrationServer extends AbstractHandler
     public static void main(String[] args) throws Exception
     {
         Server server = new Server(8080);
-        server.setHandler(new ContinuousIntegrationServer()); 
+        server.setHandler(new ContinuousIntegrationServer());
+
+        ResourceHandler resourceHandler = new ResourceHandler();
+        resourceHandler.setResourceBase("./history");
+        server.setHandler(resourceHandler);
+
         server.start();
         server.join();
+
+
+
+
     }
 }

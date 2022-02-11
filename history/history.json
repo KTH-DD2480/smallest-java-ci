@@ -1,0 +1,16 @@
+[
+  {
+    "commit": "47dea2eefc6d2816cddb3f30689070285491733c",
+    "branch": "master",
+    "repoName": "DUMMY",
+    "buildDate": "Thu Feb 10 21:07:56 CET 2022",
+    "buildLogs": "Build successful"
+  },
+  {
+    "commit": "16ab09a55b7666f6ea5462e6460581a0989831c4",
+    "branch": "develop",
+    "repoName": "DUMMY",
+    "buildDate": "Thu Feb 10 21:07:56 CET 2022",
+    "buildLogs": "DUMMY Build failed"
+  }
+]
