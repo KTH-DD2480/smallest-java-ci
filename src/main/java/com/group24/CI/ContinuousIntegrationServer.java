@@ -11,6 +11,7 @@ import java.nio.file.Paths;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.Request;
 import org.eclipse.jetty.server.handler.AbstractHandler;
+import org.eclipse.jetty.server.handler.ResourceHandler;
 import org.eclipse.jetty.util.IO;
 import org.eclipse.jetty.util.ajax.JSON;
 import org.eclipse.jetty.util.ajax.JSONEnumConvertor;
@@ -38,6 +39,9 @@ public class ContinuousIntegrationServer extends AbstractHandler
 
         CloneRepository cloner;
         Build builder;
+        History history = History.getHistoryInstance();
+
+        DiscordBot discordBot = new DiscordBot();
 
         if(request.getMethod() == "POST"){
 
@@ -68,6 +72,14 @@ public class ContinuousIntegrationServer extends AbstractHandler
 
             System.out.println("CLONE: " + cloneSuccessful);
             System.out.println("BUILD: " + buildSuccessful);
+
+            String buildLogs = buildSuccessful ? "Success" : "Failure";
+            BuildReport report = new BuildReport(repository_name, "master",commit_hash, buildLogs);
+            history.addReportToHistory(report);
+
+            discordBot.sendMsg("Repository: " + repository_name +
+                             " || Commit: " + commit_hash.substring(0,12)
+                           + " || Build: " + buildSuccessful);
         }
 
 
@@ -87,8 +99,17 @@ public class ContinuousIntegrationServer extends AbstractHandler
     public static void main(String[] args) throws Exception
     {
         Server server = new Server(8080);
-        server.setHandler(new ContinuousIntegrationServer()); 
+        server.setHandler(new ContinuousIntegrationServer());
+
+        ResourceHandler resourceHandler = new ResourceHandler();
+        resourceHandler.setResourceBase("./history");
+        server.setHandler(resourceHandler);
+
         server.start();
         server.join();
+
+
+
+
     }
 }
