@@ -48,35 +48,36 @@ public class ContinuousIntegrationServer extends AbstractHandler
             // Parse the repository URL
             String repository_url = body.getJSONObject("repository").getString("clone_url");
             // Parse the commit SHA (secure hashing algorithm)
-           String commit_hash = body.getString("after");
+            String commit_hash = body.getString("after");
             //Parse the project name
-           String repository_name = body.getJSONObject("repository").getString("full_name");
+            String repository_name = body.getJSONObject("repository").getString("full_name");
 
             // Parse the date & time the push happened.
-           String updated_at = body.getJSONObject("repository").getString("updated_at");
+            String updated_at = body.getJSONObject("repository").getString("updated_at");
 
-           // TODO parse branch
-           String repository_branch = "master";
+            // TODO parse branch
+            String repository_branch = "master";
 
             // create folder to save cloned repos
-           String projectPath = System.getProperty("user.dir");
-           String repoFolderPath = String.valueOf(Paths.get(projectPath, "repos"));
-           String buildProjectPath = String.valueOf(Paths.get(projectPath, "repos", repository_name));
+            String projectPath = System.getProperty("user.dir");
+            String repoFolderPath = String.valueOf(Paths.get(projectPath, "repos"));
+            String buildProjectPath = String.valueOf(Paths.get(projectPath, "repos", repository_name));
 
-           cloner = new CloneRepository(repository_url, repoFolderPath, repository_name);
-           builder = new Build(buildProjectPath, repository_name, commit_hash, repository_branch);
+            cloner = new CloneRepository(repository_url, repoFolderPath, repository_name);
+            builder = new Build(buildProjectPath, repository_name, commit_hash, repository_branch);
 
-           boolean buildSuccessful=false;
-           boolean cloneSuccessful = cloner.cloneRepository();
-           // TODO checkout branch
+            boolean cloneSuccessful = cloner.cloneRepository();
+            boolean checkoutSuccessful = cloner.checkoutBranch(repository_branch);
+            boolean buildSuccessful = false;
 
-           if (cloneSuccessful) {
-               buildSuccessful = builder.buildProject();
-               BuildReport report = builder.generateBuildReport();
-               history.addReportToHistory(report);
-           }
+            if (cloneSuccessful && checkoutSuccessful) {
+                buildSuccessful = builder.buildProject();
+                BuildReport report = builder.generateBuildReport();
+                history.addReportToHistory(report);
+            }
 
             System.out.println("CLONE: " + cloneSuccessful);
+            System.out.println("CHECKOUT: " + checkoutSuccessful);
             System.out.println("BUILD: " + buildSuccessful);
 
             // TODO add github and mail notification
