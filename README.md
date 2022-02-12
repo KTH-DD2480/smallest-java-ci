@@ -24,7 +24,7 @@ $ gradlew.bat build     (Windows)
 ### Tests
 ```bash
 $ ./gradlew test        (Linux/Mac)
-$ gradlew.bat test      (Windows)
+$ gradlew.bat test      (Windows )
 ```
 
 ## Usage
