@@ -1,9 +1,9 @@
 name: CI-GitHub-Actions
 on:
   push:
-    branches: [ "issue-2" ]
+    branches: [ "master" ]
   pull_request:
-    branches: [ "issue-2" ]
+    branches: [ "master" ]
 
 jobs:
   build:
