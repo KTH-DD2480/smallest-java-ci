@@ -38,6 +38,12 @@ public class ContinuousIntegrationServer extends AbstractHandler
 
         response.getWriter().println("CI job done");
     }
+
+    //Method for JUnit to initially try
+    //with gradle, remove later.
+    public void gradleTest(){
+        System.out.println("Gradle/JUnit works");
+    }
  
     // used to start the CI server in command line
     public static void main(String[] args) throws Exception

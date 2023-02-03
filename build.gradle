@@ -13,7 +13,6 @@ jar {
     manifest {
         attributes 'Main-Class': 'com.ci.ContinuousIntegrationServer'
     }
-
 }
 
 repositories {
@@ -26,7 +25,4 @@ dependencies {
     compileOnly group: 'javax.servlet', name: 'javax.servlet-api', version: '3.0.1'
     // https://mvnrepository.com/artifact/org.eclipse.jetty/jetty-server
     implementation group: 'org.eclipse.jetty', name: 'jetty-server', version: '10.0.13'
-
-
-
 }
