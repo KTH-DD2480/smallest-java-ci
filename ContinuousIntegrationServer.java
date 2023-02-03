@@ -14,8 +14,8 @@ import org.eclipse.jetty.server.handler.AbstractHandler;
 */
 public class ContinuousIntegrationServer extends AbstractHandler
 {  
-    int GROUP_NUMBER = 31;
-    int PORT = 8000 + GROUP_NUMBER;
+    final static int GROUP_NUMBER = 31;
+    final static int PORT = 8000 + GROUP_NUMBER;
     
     public void handle(String target,
                        Request baseRequest,
