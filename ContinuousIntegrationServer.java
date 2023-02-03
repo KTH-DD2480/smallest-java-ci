@@ -13,7 +13,10 @@ import org.eclipse.jetty.server.handler.AbstractHandler;
  See the Jetty documentation for API documentation of those classes.
 */
 public class ContinuousIntegrationServer extends AbstractHandler
-{
+{  
+    int GROUP_NUMBER = 31;
+    int PORT = 8000 + GROUP_NUMBER;
+    
     public void handle(String target,
                        Request baseRequest,
                        HttpServletRequest request,
@@ -37,7 +40,7 @@ public class ContinuousIntegrationServer extends AbstractHandler
     // used to start the CI server in command line
     public static void main(String[] args) throws Exception
     {
-        Server server = new Server(8080);
+        Server server = new Server(PORT);
         server.setHandler(new ContinuousIntegrationServer()); 
         server.start();
         server.join();
