@@ -46,7 +46,7 @@ public class ContinuousIntegrationServer extends AbstractHandler
     }
  
     
-    private void clone() {
+    private void cloneRepo() {
 
     }
 
