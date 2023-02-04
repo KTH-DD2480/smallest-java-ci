@@ -65,4 +65,6 @@ We shutdown everything:
 * delete the webhook in the webhook configuration page.
 
 Notes:
-* by default, Github delivers a `push` JSON payloard, documented here: <https://developer.github.com/v3/activity/events/types/#pushevent>, this information can be used to get interesting information about the commit that has just been pushed.
+* by default, Github delivers a `push` JSON payloard, documented here: <https://developer.github.com/v3/activity/events/types/#pushevent>, this information can be used to get interesting information about the commit that has just been pushed
+
+"THIS IS A TEST MODIFICIATION TO SEE IF THE CI SERVER WORKS AS INTENDED".
