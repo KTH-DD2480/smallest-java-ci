@@ -1,3 +1,5 @@
+package com.ci;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.ServletException;
@@ -36,8 +38,15 @@ public class ContinuousIntegrationServer extends AbstractHandler
 
         response.getWriter().println("CI job done");
     }
+
+    //Method for JUnit to initially try
+    //with gradle, remove later.
+    public void gradleTest(){
+        System.out.println("Gradle/JUnit works");
+    }
+ 
     
-    private void clone() {
+    private void cloneRepo() {
 
     }
 
@@ -55,7 +64,7 @@ public class ContinuousIntegrationServer extends AbstractHandler
 
     // used to start the CI server in command line
     public static void main(String[] args) throws Exception
-    {
+    {    
         Server server = new Server(PORT);
         server.setHandler(new ContinuousIntegrationServer()); 
         server.start();
