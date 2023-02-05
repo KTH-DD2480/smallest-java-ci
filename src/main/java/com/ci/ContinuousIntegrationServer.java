@@ -67,8 +67,18 @@ public class ContinuousIntegrationServer extends AbstractHandler
     private void build() {
 
     }
-    
-    private void postStatus(CommitStatus status, String description) throws Exception {
+
+    /**
+     * Set the commmit status for the current repository and SHA specified by the `repOwner`, `repName`, and ``sha` fields.
+     * @param status the status of the commit message
+     * @param description a more helpful description of the status
+     * @throws Exception if the request response is not 200.
+     * @throws Error if the necessary fields are not all set.
+     */
+    private void postStatus(CommitStatus status, String description) throws Exception, Error {
+        if (repOwner == null || repName == null || sha == null) {
+            throw new Error("One or more of the necessary fields `repOwner`, `repName`, and `sha` is not set.");
+        }
         // API enpoint for setting the commit status  
         URL url = new URL(String.format("https://api.github.com/repos/%s/%s/statuses/%s", repOwner, repName, sha));
         HttpsURLConnection con = (HttpsURLConnection) url.openConnection();
