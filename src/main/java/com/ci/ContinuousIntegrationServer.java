@@ -23,11 +23,11 @@ public class ContinuousIntegrationServer extends AbstractHandler
     final static int GROUP_NUMBER = 31;
     final static int PORT = 8000 + GROUP_NUMBER;
 
-    private final static String TOKEN;
+    private String TOKEN;
 
-    String repOwner;
-    String repName;
-    String sha;
+    private String repOwner;
+    private String repName;
+    private String sha;
 
     enum CommitStatus {
         error,
@@ -35,6 +35,8 @@ public class ContinuousIntegrationServer extends AbstractHandler
         pending,
         success
     }
+
+    
 
     public void handle(String target,
                        Request baseRequest,
