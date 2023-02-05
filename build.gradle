@@ -7,6 +7,7 @@
 
 plugins {
     id 'java'
+    id 'application'
 }
 
 jar {
@@ -26,3 +27,5 @@ dependencies {
     // https://mvnrepository.com/artifact/org.eclipse.jetty/jetty-server
     implementation group: 'org.eclipse.jetty', name: 'jetty-server', version: '10.0.13'
 }
+
+mainClassName = 'com.ci.ContinuousIntegrationServer'
