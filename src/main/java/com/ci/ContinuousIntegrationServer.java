@@ -1,17 +1,18 @@
 package com.ci;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.net.ssl.HttpsURLConnection;
-import javax.servlet.ServletException;
-
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.URL;
 
-import org.eclipse.jetty.server.Server;
+import javax.net.ssl.HttpsURLConnection;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 import org.eclipse.jetty.server.Request;
+import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.handler.AbstractHandler;
+import org.json.JSONObject;
 
 /** 
  Skeleton of a ContinuousIntegrationServer which acts as webhook
@@ -21,6 +22,8 @@ public class ContinuousIntegrationServer extends AbstractHandler
 {  
     final static int GROUP_NUMBER = 31;
     final static int PORT = 8000 + GROUP_NUMBER;
+
+    private final static String TOKEN;
 
     String repOwner;
     String repName;
@@ -32,7 +35,7 @@ public class ContinuousIntegrationServer extends AbstractHandler
         pending,
         success
     }
-    
+
     public void handle(String target,
                        Request baseRequest,
                        HttpServletRequest request,
@@ -44,7 +47,6 @@ public class ContinuousIntegrationServer extends AbstractHandler
         baseRequest.setHandled(true);
 
         System.out.println(target);
-
         // here you do all the continuous integration tasks
         // for example
         // 1st clone your repository
@@ -54,7 +56,6 @@ public class ContinuousIntegrationServer extends AbstractHandler
     }
 
     //Method for JUnit to initially try
-    //with gradle, remove later.
     public void gradleTest(){
         System.out.println("Gradle/JUnit works");
     }
@@ -69,13 +70,15 @@ public class ContinuousIntegrationServer extends AbstractHandler
     }
 
     /**
-     * Set the commmit status for the current repository and SHA specified by the `repOwner`, `repName`, and ``sha` fields.
+     * Set the commmit status for the current repository and SHA specified by the 
+     * <code>repOwner</code>, <code>repName</code>, and <code>sha</code> fields respectively.
+     * 
      * @param status the status of the commit message
      * @param description a more helpful description of the status
-     * @throws Exception if the request response is not 200.
-     * @throws Error if the necessary fields are not all set.
+     * @throws IOException if the request response is not <code>201</code>.
+     * @throws Error if all neccessary fields are not set. 
      */
-    private void postStatus(CommitStatus status, String description) throws Exception, Error {
+    private void postStatus(CommitStatus status, String description) throws IOException, Error {
         if (repOwner == null || repName == null || sha == null) {
             throw new Error("One or more of the necessary fields `repOwner`, `repName`, and `sha` is not set.");
         }
@@ -83,12 +86,18 @@ public class ContinuousIntegrationServer extends AbstractHandler
         URL url = new URL(String.format("https://api.github.com/repos/%s/%s/statuses/%s", repOwner, repName, sha));
         HttpsURLConnection con = (HttpsURLConnection) url.openConnection();
         con.setRequestMethod("POST");
-        con.setRequestProperty("accept", "application/vnd.github+json"); // Recommended header
+        con.setRequestProperty("Accept", "application/vnd.github+json"); // Recommended header
+        con.setRequestProperty("Authorization", "Bearer " + TOKEN);
         con.setDoOutput(true);
-        DataOutputStream out = new DataOutputStream(con.getOutputStream());
 
         // Add status and description to body:
-        out.writeBytes(String.format("\"status\":\"%s\", \"description\":\"%d\"", status, description));
+        JSONObject body = new JSONObject();
+        body.put("state", status.toString());
+        body.put("description", description);
+        System.out.println(body.toString());
+        
+        DataOutputStream out = new DataOutputStream(con.getOutputStream());
+        out.writeBytes(body.toString());
         out.flush();
         out.close();
 
@@ -97,9 +106,9 @@ public class ContinuousIntegrationServer extends AbstractHandler
 
         // Check response code
         int code = con.getResponseCode();
-        if (code != 200) {
+        if (code != 201) {
             System.out.println(String.format("Error when setting commit status! (%d)", code));
-            throw new Exception(con.getResponseMessage());
+            throw new IOException(con.getResponseMessage());
         }
         con.disconnect();
     }
