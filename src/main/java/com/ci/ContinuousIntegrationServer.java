@@ -48,6 +48,12 @@ public class ContinuousIntegrationServer extends AbstractHandler
         success
     }
 
+    enum BuildStatus {
+        success,
+        buildFail,
+        testFail
+    }
+
     public void handle(String target,
                        Request baseRequest,
                        HttpServletRequest request,
@@ -66,12 +72,41 @@ public class ContinuousIntegrationServer extends AbstractHandler
         repName = pushRequest.getJSONObject("repository").getString("name");
         sha = pushRequest.getString("after");
 
-        // here you do all the continuous integration tasks
-        // for example
-        // 1st clone your repository
-        // 2nd compile the code
+        // Set pending status
+        postStatus(CommitStatus.pending, "Building repository and running tests...");
+
+        try {
+            // Download target repository
+            this.cloneRepo();
+            // Build the cloneld repository
+            this.build();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+            postStatus(CommitStatus.error, "CI server encountered an error");
+            response.getWriter().println("Server interrupted");
+            response.setStatus(500);
+            return;
+        }
+        
+        var res = analyzeResults();
+
+        switch (res) {
+            case buildFail:
+                postStatus(CommitStatus.failure, "Build failed");
+                break;
+            case testFail:
+                postStatus(CommitStatus.failure, "Build complete but one or more tests failed");
+                break;
+            default:
+                postStatus(CommitStatus.success, "Build complete and all tests passed");
+        }
 
         response.getWriter().println("CI job done");
+    }
+
+    // TODO: Implement this method!
+    private BuildStatus analyzeResults() {
+        return BuildStatus.success;
     }
 
     //Method for JUnit to initially try
