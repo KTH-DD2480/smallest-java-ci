@@ -18,7 +18,9 @@ public class ContinuousIntegrationServer extends AbstractHandler
 {  
     final static int GROUP_NUMBER = 31;
     final static int PORT = 8000 + GROUP_NUMBER;
-    
+
+    private String repoURL, branch, dirPath;
+
     public void handle(String target,
                        Request baseRequest,
                        HttpServletRequest request,
@@ -35,7 +37,6 @@ public class ContinuousIntegrationServer extends AbstractHandler
         // for example
         // 1st clone your repository
         // 2nd compile the code
-
         response.getWriter().println("CI job done");
     }
 
@@ -45,9 +46,42 @@ public class ContinuousIntegrationServer extends AbstractHandler
         System.out.println("Gradle/JUnit works");
     }
  
-    
-    private void cloneRepo() {
+    /**
+     * Clones the git repository specified by repoURL into the directory specified by dirPath.
+     * @param repoUrl The URL of the git repository to clone.
+     * @param branch The specific branch of the git repository to be clone.
+     * @param dirPath The path to where the repository should be cloned.
+     * @return The exit value of the "git clone repoName dirPath" command.
+     * @throws IOException
+     * @throws InterruptedException
+     * 
+     */
+    private int cloneRepo() throws IOException, InterruptedException{
+        /*
+         * TODO: Get repoURL, branch from HTTP request and decide and assign specific repository path.
+         */
+        repoURL = "https://github.com/DD2480-Group31/Continuous-Integration.git";
+        dirPath = "./target_repo";
+        branch = "Issue#6";
+        String[] cmdarr = {"git", "clone", "-b", branch, repoURL, dirPath};
+        Process p = Runtime.getRuntime().exec(cmdarr);
 
+        p.waitFor();
+        int exitValue = p.exitValue();
+        p.destroy();
+
+        return exitValue;
+    }
+
+    /**
+     * Public method for test visibility. 
+     * Clones the git repository specified by repoURL into the directory specified by dirPath.
+     * @return Result of cloneRepo.
+     * @throws IOException
+     * @throws InterruptedException
+     */
+    public int publicCloneRepo() throws IOException, InterruptedException{
+        return cloneRepo();
     }
 
     private void build() {
