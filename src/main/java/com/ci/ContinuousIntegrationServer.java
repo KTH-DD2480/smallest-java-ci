@@ -158,10 +158,10 @@ public class ContinuousIntegrationServer extends AbstractHandler
     // used to start the CI server in command line
     public static void main(String[] args) throws Exception
     {    
-        // Server server = new Server(PORT);
-        // server.setHandler(new ContinuousIntegrationServer()); 
-        // server.start();
-        // server.join();
+        Server server = new Server(PORT);
+        server.setHandler(new ContinuousIntegrationServer()); 
+        server.start();
+        server.join();
 
         // Call to cleanup the target directory
         //cleanTargetDir();
