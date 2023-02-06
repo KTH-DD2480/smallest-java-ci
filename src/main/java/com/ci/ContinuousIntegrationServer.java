@@ -37,7 +37,7 @@ public class ContinuousIntegrationServer extends AbstractHandler
     private String repOwner;
     private String repName;
     private String sha;
-    private String repoURL;
+    private String repoCloneURL;
     private String branch;
     private String dirPath = "./target";
     
@@ -69,7 +69,7 @@ public class ContinuousIntegrationServer extends AbstractHandler
         repOwner = pushRequest.getJSONObject("repository").getJSONObject("owner").getString("name");
         repName = pushRequest.getJSONObject("repository").getString("name");
         sha = pushRequest.getString("after");
-        repoURL = pushRequest.getJSONObject("repository").getString("clone_url");
+        repoCloneURL = pushRequest.getJSONObject("repository").getString("clone_url");
         branch = pushRequest.getString("ref").split("/")[2];
 
         // here you do all the continuous integration tasks
@@ -85,8 +85,8 @@ public class ContinuousIntegrationServer extends AbstractHandler
     }
  
     /**
-     * Clones the git repository specified by repoURL into the directory specified by dirPath.
-     * @param repoUrl The URL of the git repository to clone.
+     * Clones the git repository specified by repoCloneURL into the directory specified by dirPath.
+     * @param repoCloneURL The URL of the git repository to clone.
      * @param branch The specific branch of the git repository to be clone.
      * @param dirPath The path to where the repository should be cloned.
      * @return The exit value of the "git clone repoName dirPath" command.
@@ -95,10 +95,7 @@ public class ContinuousIntegrationServer extends AbstractHandler
      * 
      */
     private int cloneRepo() throws IOException, InterruptedException{
-        /*
-         * TODO: Get repoURL, branch from HTTP request and decide and assign specific repository path.
-         */
-        String[] cmdarr = {"git", "clone", "-b", branch, repoURL, dirPath};
+        String[] cmdarr = {"git", "clone", "-b", branch, repoCloneURL, dirPath};
         Process p = Runtime.getRuntime().exec(cmdarr);
 
         p.waitFor();
@@ -110,7 +107,7 @@ public class ContinuousIntegrationServer extends AbstractHandler
 
     /**
      * Public method for test visibility. 
-     * Clones the git repository specified by repoURL into the directory specified by dirPath.
+     * Clones the git repository specified by repoCloneURL into the directory specified by dirPath.
      * @return Result of cloneRepo.
      * @throws IOException
      * @throws InterruptedException
