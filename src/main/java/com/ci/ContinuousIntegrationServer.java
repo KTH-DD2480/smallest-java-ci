@@ -37,6 +37,7 @@ public class ContinuousIntegrationServer extends AbstractHandler
     private String repOwner;
     private String repName;
     private String sha;
+    private String dirPath;
 
     private JSONObject pushRequest;
 
@@ -85,8 +86,13 @@ public class ContinuousIntegrationServer extends AbstractHandler
 
     }
 
-    private void build() {
-
+    /**
+     * Builds the branch that was cloned into the target directory.
+     */
+    private void build() throws IOException, InterruptedException {
+        String[] arguments = {dirPath + "/gradlew", "build"};
+        Process process = Runtime.getRuntime().exec(arguments);
+        process.waitFor();
     }
 
     /**
