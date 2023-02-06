@@ -9,6 +9,14 @@ import javax.net.ssl.HttpsURLConnection;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.ServletException;
+ 
+import java.io.IOException;
+import java.nio.file.FileSystems;
+import java.nio.file.Path;
+import java.io.File;
+ 
+import org.eclipse.jetty.server.Server;
 
 import org.eclipse.jetty.server.Request;
 import org.eclipse.jetty.server.Server;
@@ -124,8 +132,27 @@ public class ContinuousIntegrationServer extends AbstractHandler
         con.disconnect();
     }
 
-    private void cleanup() {
-        
+    /**
+     * Deletes all the contents within the target directory
+     * @param targetDir Filepath to the directory to be deleted
+     */
+    private static void cleanup(File targetDir) {
+        File[] allContents = targetDir.listFiles();
+        if (allContents != null) {
+            for (File file : allContents) {
+                cleanup(file);
+            }
+        }
+        targetDir.delete();
+    }
+
+    /**
+     * Helper-method to specifically delete the 'target'
+     * directory where we build/test the system under test.
+     */
+    private static void cleanTargetDir(){
+        Path targetDir = FileSystems.getDefault().getPath("./target");
+        cleanup(targetDir.toFile());
     }
 
     // used to start the CI server in command line
@@ -135,5 +162,8 @@ public class ContinuousIntegrationServer extends AbstractHandler
         server.setHandler(new ContinuousIntegrationServer()); 
         server.start();
         server.join();
+
+        // Call to cleanup the target directory
+        //cleanTargetDir();
     }
 }
