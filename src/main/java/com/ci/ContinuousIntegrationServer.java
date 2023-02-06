@@ -5,6 +5,9 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.ServletException;
  
 import java.io.IOException;
+import java.nio.file.FileSystems;
+import java.nio.file.Path;
+import java.io.File;
  
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.Request;
@@ -58,8 +61,14 @@ public class ContinuousIntegrationServer extends AbstractHandler
 
     }
 
-    private void cleanup() {
-        
+    private static void cleanup(File targetDir) {
+        File[] allContents = targetDir.listFiles();
+        if (allContents != null) {
+            for (File file : allContents) {
+                cleanup(file);
+            }
+        }
+        targetDir.delete();
     }
 
     // used to start the CI server in command line
@@ -69,5 +78,9 @@ public class ContinuousIntegrationServer extends AbstractHandler
         server.setHandler(new ContinuousIntegrationServer()); 
         server.start();
         server.join();
+
+        // Call to cleanup the target directory
+        // Path targetDir = FileSystems.getDefault().getPath("./target");
+        // cleanup(targetDir.toFile());
     }
 }
