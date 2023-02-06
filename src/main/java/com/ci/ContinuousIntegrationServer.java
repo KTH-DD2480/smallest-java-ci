@@ -105,17 +105,6 @@ public class ContinuousIntegrationServer extends AbstractHandler
         return exitValue;
     }
 
-    /**
-     * Public method for test visibility. 
-     * Clones the git repository specified by repoCloneURL into the directory specified by dirPath.
-     * @return Result of cloneRepo.
-     * @throws IOException
-     * @throws InterruptedException
-     */
-    public int publicCloneRepo() throws IOException, InterruptedException{
-        return cloneRepo();
-    }
-
     private void build() {
 
     }
