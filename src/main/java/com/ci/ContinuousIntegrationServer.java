@@ -29,6 +29,7 @@ public class ContinuousIntegrationServer extends AbstractHandler
     private String repOwner;
     private String repName;
     private String sha;
+    private String dirPath;
 
     private JSONObject pushRequest;
 
@@ -77,8 +78,14 @@ public class ContinuousIntegrationServer extends AbstractHandler
 
     }
 
-    private void build() {
-
+    /**
+     * Builds the branch that was cloned into the target directory.
+     */
+    private void build() throws IOException, InterruptedException {
+        String path = dirPath + "/Continuous-Integration/src/main/java/com/ci/ContinuousIntegrationServer.java";
+        String[] arguments = {"javac", "-cp", "servlet-api-2.5.jar:jetty-all-7.0.2.v20100331.jar", path};
+        Process process = Runtime.getRuntime().exec(arguments);
+        process.waitFor();
     }
 
     /**
