@@ -132,6 +132,10 @@ public class ContinuousIntegrationServer extends AbstractHandler
         con.disconnect();
     }
 
+    /**
+     * Deletes all the contents within the target directory
+     * @param targetDir Filepath to the directory to be deleted
+     */
     private static void cleanup(File targetDir) {
         File[] allContents = targetDir.listFiles();
         if (allContents != null) {
@@ -142,16 +146,24 @@ public class ContinuousIntegrationServer extends AbstractHandler
         targetDir.delete();
     }
 
+    /**
+     * Helper-method to specifically delete the 'target'
+     * directory where we build/test the system under test.
+     */
+    private static void cleanTargetDir(){
+        Path targetDir = FileSystems.getDefault().getPath("./target");
+        cleanup(targetDir.toFile());
+    }
+
     // used to start the CI server in command line
     public static void main(String[] args) throws Exception
     {    
-        Server server = new Server(PORT);
-        server.setHandler(new ContinuousIntegrationServer()); 
-        server.start();
-        server.join();
+        // Server server = new Server(PORT);
+        // server.setHandler(new ContinuousIntegrationServer()); 
+        // server.start();
+        // server.join();
 
         // Call to cleanup the target directory
-        // Path targetDir = FileSystems.getDefault().getPath("./target");
-        // cleanup(targetDir.toFile());
+        //cleanTargetDir();
     }
 }
