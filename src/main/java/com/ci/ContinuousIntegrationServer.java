@@ -96,7 +96,6 @@ public class ContinuousIntegrationServer extends AbstractHandler
         JSONObject body = new JSONObject();
         body.put("state", status.toString());
         body.put("description", description);
-        System.out.println(body.toString());
         
         DataOutputStream out = new DataOutputStream(con.getOutputStream());
         out.writeBytes(body.toString());
