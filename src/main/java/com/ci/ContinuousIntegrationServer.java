@@ -21,7 +21,14 @@ import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.Request;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.handler.AbstractHandler;
+import org.json.JSONException;
 import org.json.JSONObject;
+
+//import org.eclipse.jgit.*;
+import org.eclipse.jgit.api.Git;
+import org.eclipse.jgit.api.errors.GitAPIException;
+import org.eclipse.jgit.api.errors.InvalidRemoteException;
+import org.eclipse.jgit.api.errors.TransportException;
 
 /** 
  Skeleton of a ContinuousIntegrationServer which acts as webhook
@@ -40,6 +47,7 @@ public class ContinuousIntegrationServer extends AbstractHandler
     private String sha;
 
     private JSONObject pushRequest;
+    private Git repository;
 
     enum CommitStatus {
         error,
@@ -80,10 +88,10 @@ public class ContinuousIntegrationServer extends AbstractHandler
             this.cloneRepo();
             // Build the cloneld repository
             this.build();
-        } catch (InterruptedException e) {
+        } catch (InterruptedException | JSONException | GitAPIException e) {
             e.printStackTrace();
             postStatus(CommitStatus.error, "CI server encountered an error");
-            response.getWriter().println("Server interrupted");
+            response.getWriter().println("Server error");
             response.setStatus(500);
             return;
         }
@@ -115,8 +123,12 @@ public class ContinuousIntegrationServer extends AbstractHandler
     }
  
     
-    private void cloneRepo() {
-
+    private void cloneRepo() throws InvalidRemoteException, TransportException, JSONException, GitAPIException {
+        repository = Git
+            .cloneRepository()
+            .setURI(pushRequest.getJSONObject("repository").getString("clone_url"))
+            .setDirectory(new File(DIR_PATH))
+            .call();
     }
 
     /**
@@ -153,7 +165,7 @@ public class ContinuousIntegrationServer extends AbstractHandler
         JSONObject body = new JSONObject();
         body.put("state", status.toString());
         body.put("description", description);
-        
+
         DataOutputStream out = new DataOutputStream(con.getOutputStream());
         out.writeBytes(body.toString());
         out.flush();
