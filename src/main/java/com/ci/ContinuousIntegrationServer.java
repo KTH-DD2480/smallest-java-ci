@@ -89,6 +89,16 @@ public class ContinuousIntegrationServer extends AbstractHandler {
         repoCloneURL = pushRequest.getJSONObject("repository").getString("clone_url");
         branch = pushRequest.getString("ref").split("/")[2];
 
+        // Respond to the Github servers before building anything:
+        if (sha.matches("^0+$")) {
+            response.getWriter().println("SHA was zero, no build was tested.");
+            return;
+        } else {
+            response.setStatus(HttpServletResponse.SC_ACCEPTED);
+            response.getWriter().println("Recieved push request, building project...");
+            response.flushBuffer();
+        }
+
         // Set pending status
         postStatus(CommitStatus.pending, "Building repository and running tests...");
 
@@ -100,8 +110,6 @@ public class ContinuousIntegrationServer extends AbstractHandler {
         } catch (Exception e) {
             e.printStackTrace();
             postStatus(CommitStatus.error, "CI server encountered an error");
-            response.getWriter().println("Server error");
-            response.setStatus(500);
 
             // Close the repository if we're returning early
             if (repository != null) {
@@ -122,7 +130,6 @@ public class ContinuousIntegrationServer extends AbstractHandler {
                 postStatus(CommitStatus.success, "Build complete and all tests passed");
         }
         repository.close();
-        response.getWriter().println("CI job done");
     }
 
 
