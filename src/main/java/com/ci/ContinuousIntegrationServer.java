@@ -21,14 +21,20 @@ import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.Request;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.handler.AbstractHandler;
+import org.json.JSONException;
 import org.json.JSONObject;
+
+//import org.eclipse.jgit.*;
+import org.eclipse.jgit.api.Git;
+import org.eclipse.jgit.api.errors.GitAPIException;
+import org.eclipse.jgit.api.errors.InvalidRemoteException;
+import org.eclipse.jgit.api.errors.TransportException;
 
 /** 
  Skeleton of a ContinuousIntegrationServer which acts as webhook
  See the Jetty documentation for API documentation of those classes.
 */
-public class ContinuousIntegrationServer extends AbstractHandler
-{  
+public class ContinuousIntegrationServer extends AbstractHandler {  
     final static int GROUP_NUMBER = 31;
     final static int PORT = 8000 + GROUP_NUMBER;
     final static String DIR_PATH = "target";
@@ -40,9 +46,9 @@ public class ContinuousIntegrationServer extends AbstractHandler
     private String sha;
     private String repoCloneURL;
     private String branch;
-    private String dirPath = "./target";
     
     private JSONObject pushRequest;
+    private Git repository;
 
     enum CommitStatus {
         error,
@@ -85,10 +91,10 @@ public class ContinuousIntegrationServer extends AbstractHandler
             this.cloneRepo();
             // Build the cloneld repository
             this.build();
-        } catch (InterruptedException e) {
+        } catch (InterruptedException | JSONException | GitAPIException e) {
             e.printStackTrace();
             postStatus(CommitStatus.error, "CI server encountered an error");
-            response.getWriter().println("Server interrupted");
+            response.getWriter().println("Server error");
             response.setStatus(500);
             return;
         }
@@ -122,23 +128,18 @@ public class ContinuousIntegrationServer extends AbstractHandler
     /**
      * Clones the git repository specified by repoCloneURL into the directory specified by dirPath.
      * @param repoCloneURL The URL of the git repository to clone.
-     * @param branch The specific branch of the git repository to be clone.
-     * @param dirPath The path to where the repository should be cloned.
      * @return The exit value of the "git clone repoName dirPath" command.
-     * @throws IOException
-     * @throws InterruptedException
-     * 
+     * @throws InvalidRemoteException
+     * @throws TransportException
+     * @throws GitAPIException
      */
-    private int cloneRepo() throws IOException, InterruptedException{
-        String[] cmdarr = {"git", "clone", "-b", branch, repoCloneURL, dirPath};
-        Process p = Runtime.getRuntime().exec(cmdarr);
-
-        p.waitFor();
-        int exitValue = p.exitValue();
-        p.destroy();
-
-        return exitValue;
+    private void cloneRepo() throws InvalidRemoteException, TransportException, JSONException, GitAPIException {
+        repository = Git.cloneRepository()
+            .setURI(repoCloneURL)
+            .setDirectory(new File(DIR_PATH))
+            .call();
     }
+
 
     /**
      * Builds the branch that was cloned into the target directory.
@@ -174,7 +175,7 @@ public class ContinuousIntegrationServer extends AbstractHandler
         JSONObject body = new JSONObject();
         body.put("state", status.toString());
         body.put("description", description);
-        
+
         DataOutputStream out = new DataOutputStream(con.getOutputStream());
         out.writeBytes(body.toString());
         out.flush();
