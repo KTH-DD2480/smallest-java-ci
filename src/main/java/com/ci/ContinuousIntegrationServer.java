@@ -38,7 +38,10 @@ public class ContinuousIntegrationServer extends AbstractHandler
     private String repOwner;
     private String repName;
     private String sha;
-
+    private String repoCloneURL;
+    private String branch;
+    private String dirPath = "./target";
+    
     private JSONObject pushRequest;
 
     enum CommitStatus {
@@ -63,7 +66,7 @@ public class ContinuousIntegrationServer extends AbstractHandler
         response.setContentType("text/html;charset=utf-8");
         response.setStatus(HttpServletResponse.SC_OK);
         baseRequest.setHandled(true);
-
+        
         System.out.println(target);
 
         pushRequest = new JSONObject(request.getReader().lines().collect(Collectors.joining()));
@@ -71,6 +74,8 @@ public class ContinuousIntegrationServer extends AbstractHandler
         repOwner = pushRequest.getJSONObject("repository").getJSONObject("owner").getString("name");
         repName = pushRequest.getJSONObject("repository").getString("name");
         sha = pushRequest.getString("after");
+        repoCloneURL = pushRequest.getJSONObject("repository").getString("clone_url");
+        branch = pushRequest.getString("ref").split("/")[2];
 
         // Set pending status
         postStatus(CommitStatus.pending, "Building repository and running tests...");
@@ -114,9 +119,25 @@ public class ContinuousIntegrationServer extends AbstractHandler
         System.out.println("Gradle/JUnit works");
     }
  
-    
-    private void cloneRepo() {
+    /**
+     * Clones the git repository specified by repoCloneURL into the directory specified by dirPath.
+     * @param repoCloneURL The URL of the git repository to clone.
+     * @param branch The specific branch of the git repository to be clone.
+     * @param dirPath The path to where the repository should be cloned.
+     * @return The exit value of the "git clone repoName dirPath" command.
+     * @throws IOException
+     * @throws InterruptedException
+     * 
+     */
+    private int cloneRepo() throws IOException, InterruptedException{
+        String[] cmdarr = {"git", "clone", "-b", branch, repoCloneURL, dirPath};
+        Process p = Runtime.getRuntime().exec(cmdarr);
 
+        p.waitFor();
+        int exitValue = p.exitValue();
+        p.destroy();
+
+        return exitValue;
     }
 
     /**

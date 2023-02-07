@@ -1,6 +1,7 @@
 package com.ci;
 import org.junit.Test;
 import static org.junit.Assert.*;
+import java.io.IOException;
 
 
 public class ContinuousIntegrationServerTest {
@@ -11,12 +12,4 @@ public class ContinuousIntegrationServerTest {
         public void verifyNoExceptionsThrown(){
             DEFAULT.gradleTest();
         }
-
-
-
-
-
-
-
 }
-
