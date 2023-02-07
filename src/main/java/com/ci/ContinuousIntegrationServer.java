@@ -208,8 +208,8 @@ public class ContinuousIntegrationServer extends AbstractHandler {
     }
 
     /**
-     * Helper-method to specifically delete the 'target'
-     * directory where we build/test the system under test.
+     * Helper-method to specifically delete the `build`
+     * directory within the `target` directory.
      */
     private static void cleanTargetBuild(){
         Path targetDir = FileSystems.getDefault().getPath("./target/build");
