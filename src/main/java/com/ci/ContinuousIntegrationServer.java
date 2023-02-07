@@ -84,7 +84,7 @@ public class ContinuousIntegrationServer extends AbstractHandler {
 
         try {
             // Update target repository and checkout to the correct branch.
-            this.updateTarget();
+            repository = GitUtils.updateTarget(repoCloneURL, branch);
             // Build the cloneld repository
             this.build();
         } catch (Exception e) {
@@ -124,56 +124,6 @@ public class ContinuousIntegrationServer extends AbstractHandler {
     //Method for JUnit to initially try
     public void gradleTest(){
         System.out.println("Gradle/JUnit works");
-    }
- 
-    /**
-     * Clones the git repository specified by <code>repoCloneURL</code> into the directory specified by <code>DIR_PATH</code>.
-     * @param repoCloneURL The URL of the git repository to clone.
-     * @throws Exception if an error occours when cloning the repository.
-     */
-    private void cloneRepo() throws Exception {
-        try {
-            repository = Git.cloneRepository()
-                .setURI(repoCloneURL)
-                .setDirectory(new File(DIR_PATH))
-                .setCloneAllBranches(true)
-                .call();
-        } catch (Exception e) {
-            // TODO: Better error handling?
-            throw new Exception("Error encountered in `cloneRepo`");
-        }
-    }
-
-    /**
-     * Pull the repository declared in the <code>repository</code> field and checkout to the branch specified by the <code>branch</code> field.
-     * @throws Exception if an error occours when either pulling or branching.
-     */
-    private void pullAndBranch() throws Exception {
-        try {
-            repository.pull().call();
-            repository.checkout().addPath("origin/" + branch).call();
-        } catch (Exception e) {
-            // TODO: Better error handling?
-            e.printStackTrace();
-            throw new Exception("Error encountered in `pullAndBranch`");
-        }
-        
-    }
-
-    /**
-     * Update the target repository either by pulling the main branch or cloning the repository.
-     * Then checkout to the branch specified by the <code>branch</code> field.
-     * 
-     * @throws Exception 
-     */
-    private void updateTarget() throws Exception {
-        File gitDir = new File(DIR_PATH + "/.git");
-        try {
-            repository = Git.open(gitDir);     
-        } catch (IOException e) {
-            this.cloneRepo();
-        }
-        this.pullAndBranch();
     }
 
     /**
