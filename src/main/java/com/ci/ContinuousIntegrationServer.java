@@ -34,8 +34,7 @@ import org.eclipse.jgit.api.errors.TransportException;
  Skeleton of a ContinuousIntegrationServer which acts as webhook
  See the Jetty documentation for API documentation of those classes.
 */
-public class ContinuousIntegrationServer extends AbstractHandler
-{  
+public class ContinuousIntegrationServer extends AbstractHandler {  
     final static int GROUP_NUMBER = 31;
     final static int PORT = 8000 + GROUP_NUMBER;
     final static String DIR_PATH = "target";
@@ -45,7 +44,9 @@ public class ContinuousIntegrationServer extends AbstractHandler
     private String repOwner;
     private String repName;
     private String sha;
-
+    private String repoCloneURL;
+    private String branch;
+    
     private JSONObject pushRequest;
     private Git repository;
 
@@ -71,7 +72,7 @@ public class ContinuousIntegrationServer extends AbstractHandler
         response.setContentType("text/html;charset=utf-8");
         response.setStatus(HttpServletResponse.SC_OK);
         baseRequest.setHandled(true);
-
+        
         System.out.println(target);
 
         pushRequest = new JSONObject(request.getReader().lines().collect(Collectors.joining()));
@@ -79,6 +80,8 @@ public class ContinuousIntegrationServer extends AbstractHandler
         repOwner = pushRequest.getJSONObject("repository").getJSONObject("owner").getString("name");
         repName = pushRequest.getJSONObject("repository").getString("name");
         sha = pushRequest.getString("after");
+        repoCloneURL = pushRequest.getJSONObject("repository").getString("clone_url");
+        branch = pushRequest.getString("ref").split("/")[2];
 
         // Set pending status
         postStatus(CommitStatus.pending, "Building repository and running tests...");
@@ -122,14 +125,21 @@ public class ContinuousIntegrationServer extends AbstractHandler
         System.out.println("Gradle/JUnit works");
     }
  
-    
+    /**
+     * Clones the git repository specified by repoCloneURL into the directory specified by dirPath.
+     * @param repoCloneURL The URL of the git repository to clone.
+     * @return The exit value of the "git clone repoName dirPath" command.
+     * @throws InvalidRemoteException
+     * @throws TransportException
+     * @throws GitAPIException
+     */
     private void cloneRepo() throws InvalidRemoteException, TransportException, JSONException, GitAPIException {
-        repository = Git
-            .cloneRepository()
-            .setURI(pushRequest.getJSONObject("repository").getString("clone_url"))
+        repository = Git.cloneRepository()
+            .setURI(repoCloneURL)
             .setDirectory(new File(DIR_PATH))
             .call();
     }
+
 
     /**
      * Builds the branch that was cloned into the target directory.
