@@ -196,8 +196,16 @@ public class ContinuousIntegrationServer extends AbstractHandler {
      * Helper-method to specifically delete the `build`
      * directory within the `target` directory.
      */
-    private static void cleanTargetBuild(){
+    private static void cleanBuild(){
         Path targetDir = FileSystems.getDefault().getPath("./target/build");
+        cleanup(targetDir.toFile());
+    }
+
+    /**
+     * Helper-method to specifically delete the entire `target` directory.
+     */
+    private static void cleanTarget(){
+        Path targetDir = FileSystems.getDefault().getPath("./target");
         cleanup(targetDir.toFile());
     }
 
@@ -208,8 +216,5 @@ public class ContinuousIntegrationServer extends AbstractHandler {
         server.setHandler(new ContinuousIntegrationServer()); 
         server.start();
         server.join();
-
-        // Call to cleanup the target directory
-        //cleanTargetBuild();
     }
 }
