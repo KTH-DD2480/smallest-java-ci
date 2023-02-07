@@ -13,6 +13,7 @@ import javax.servlet.ServletException;
  
 import java.io.IOException;
 import java.nio.file.FileSystems;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.io.File;
  
@@ -31,11 +32,8 @@ import org.eclipse.jgit.api.Git;
  See the Jetty documentation for API documentation of those classes.
 */
 public class ContinuousIntegrationServer extends AbstractHandler {  
-    final static int GROUP_NUMBER = 31;
-    final static int PORT = 8000 + GROUP_NUMBER;
     final static String DIR_PATH = "target";
-
-    private String TOKEN;
+    final private String TOKEN;
 
     private String repOwner;
     private String repName;
@@ -57,6 +55,10 @@ public class ContinuousIntegrationServer extends AbstractHandler {
         success,
         buildFail,
         testFail
+    }
+
+    public ContinuousIntegrationServer(String statusToken) {
+        TOKEN = statusToken;
     }
 
     public void handle(String target,
@@ -204,8 +206,11 @@ public class ContinuousIntegrationServer extends AbstractHandler {
     // used to start the CI server in command line
     public static void main(String[] args) throws Exception
     {    
-        Server server = new Server(PORT);
-        server.setHandler(new ContinuousIntegrationServer()); 
+        JSONObject conf = new JSONObject(Files.readString(Path.of("config.json")));
+        int port = conf.getInt("port");
+        String statusToken = conf.getString("status-token");
+        Server server = new Server(port);
+        server.setHandler(new ContinuousIntegrationServer(statusToken)); 
         server.start();
         server.join();
 
