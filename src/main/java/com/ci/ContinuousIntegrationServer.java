@@ -31,6 +31,7 @@ public class ContinuousIntegrationServer extends AbstractHandler
 {  
     final static int GROUP_NUMBER = 31;
     final static int PORT = 8000 + GROUP_NUMBER;
+    final static String DIR_PATH = "target";
 
     private String TOKEN;
 
@@ -50,7 +51,11 @@ public class ContinuousIntegrationServer extends AbstractHandler
         success
     }
 
-    
+    enum BuildStatus {
+        success,
+        buildFail,
+        testFail
+    }
 
     public void handle(String target,
                        Request baseRequest,
@@ -72,11 +77,41 @@ public class ContinuousIntegrationServer extends AbstractHandler
         repoCloneURL = pushRequest.getJSONObject("repository").getString("clone_url");
         branch = pushRequest.getString("ref").split("/")[2];
 
-        // here you do all the continuous integration tasks
-        // for example
-        // 1st clone your repository
-        // 2nd compile the code
+        // Set pending status
+        postStatus(CommitStatus.pending, "Building repository and running tests...");
+
+        try {
+            // Download target repository
+            this.cloneRepo();
+            // Build the cloneld repository
+            this.build();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+            postStatus(CommitStatus.error, "CI server encountered an error");
+            response.getWriter().println("Server interrupted");
+            response.setStatus(500);
+            return;
+        }
+        
+        var res = analyzeResults();
+
+        switch (res) {
+            case buildFail:
+                postStatus(CommitStatus.failure, "Build failed");
+                break;
+            case testFail:
+                postStatus(CommitStatus.failure, "Build complete but one or more tests failed");
+                break;
+            default:
+                postStatus(CommitStatus.success, "Build complete and all tests passed");
+        }
+
         response.getWriter().println("CI job done");
+    }
+
+    // TODO: Implement this method!
+    private BuildStatus analyzeResults() {
+        return BuildStatus.success;
     }
 
     //Method for JUnit to initially try
@@ -105,8 +140,13 @@ public class ContinuousIntegrationServer extends AbstractHandler
         return exitValue;
     }
 
-    private void build() {
-
+    /**
+     * Builds the branch that was cloned into the target directory.
+     */
+    private void build() throws IOException, InterruptedException {
+        String[] arguments = {"./gradlew", "build"};
+        Process process = Runtime.getRuntime().exec(arguments, null, new File(DIR_PATH));
+        process.waitFor();
     }
 
     /**
