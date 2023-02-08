@@ -14,6 +14,7 @@ import javax.servlet.ServletException;
 import java.io.IOException;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
+import java.nio.file.NotDirectoryException;
 import java.nio.file.Path;
 import java.io.File;
  
@@ -260,16 +261,22 @@ public class ContinuousIntegrationServer extends AbstractHandler {
      * Helper-method to specifically delete the `build`
      * directory within the `target` directory.
      */
-    private static void cleanBuild(){
+    public static void cleanBuild() throws NotDirectoryException{
         Path targetDir = FileSystems.getDefault().getPath("./target/build");
+        if(Files.isDirectory(targetDir) == false){
+            throw new NotDirectoryException("The directory does not exist.");
+        }
         cleanup(targetDir.toFile());
     }
 
     /**
      * Helper-method to specifically delete the entire `target` directory.
      */
-    private static void cleanTarget(){
+    public static void cleanTarget() throws NotDirectoryException{
         Path targetDir = FileSystems.getDefault().getPath("./target");
+        if(Files.isDirectory(targetDir) == false){
+            throw new NotDirectoryException("The directory does not exist.");
+        }
         cleanup(targetDir.toFile());
     }
 
