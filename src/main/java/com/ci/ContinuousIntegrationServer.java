@@ -207,6 +207,7 @@ public class ContinuousIntegrationServer extends AbstractHandler {
         BuildStatus res = BuildStatus.success;
         try{
             docs = parseXML(testXMLDirPath);
+            if(docs.length == 0) return BuildStatus.buildFail; // test directory was empty, build failed
             for(int i = 0; i < docs.length; i++){
                 if(docs[i] == null){
                     continue;
