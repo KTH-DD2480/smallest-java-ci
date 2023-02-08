@@ -21,32 +21,53 @@ public class ContinuousIntegrationServerTest {
         /**
          * Requirements: See `cleanTarget` documentation
          * Contract:
-         *      Precondition:    
-         *      Postcondition:   
+         *      Precondition: There does not exists a `target` directory.
+         *      Postcondition: `cleanTarget` throws `NotDirectoryException`
          */
-        public void testEmptyTargetDirCleanup() throws NotDirectoryException{
-            new File("./target").mkdirs();
-
+        public void testNoTargetDirCleanup() throws NotDirectoryException{
+            //Retrieve the path of where target "should" exist
             Path targetPath = Path.of("./target");
-            assertTrue(Files.isDirectory(targetPath));
-            DEFAULT.cleanTarget();
+
+            //Check that no target directory exists
+            assertFalse(Files.isDirectory(targetPath));
+
+            //Check that `cleanTarget` throws `NotDirectoryException` when 
+            //no `target` directory exists.
+            assertThrows(NotDirectoryException.class, () -> DEFAULT.cleanTarget());
+
+            //Again check that no target directory exists
             assertFalse(Files.isDirectory(targetPath));       
         }
 
         @Test
         /**
-         * Requirements: See `cleanTarget` documentation
+         * Requirements: See `cleanBuild` documentation
          * Contract:
-         *      Precondition:    
-         *      Postcondition:   
+         *      Precondition: There exists a `target` directory but no `target/build` 
+         *                    directory.
+         *      Postcondition: The `cleanBuild` method throws `NotDirectoryException`
          */
-        public void testNoTargetDirCleanup() throws NotDirectoryException{
+        public void testNoBuildDirCleanup() throws NotDirectoryException{
+            //Creates a `target` directory
             new File("./target").mkdirs();
+
+            //Retrieves the path to `target`
             Path targetPath = Path.of("./target");
+
+            //Check that `target` is a directory
             assertTrue(Files.isDirectory(targetPath));
-            DEFAULT.cleanBuild();
+
+            //Check that the `cleanBuild` method throws the `NotDirectoryException`
+            //when it doesn't exist.
+            assertThrows(NotDirectoryException.class, () -> DEFAULT.cleanBuild());
+
+            //Check that `target` is still intact
             assertTrue(Files.isDirectory(targetPath));
+
+            //Remove the `target` folder
             DEFAULT.cleanTarget();
+
+            //Check that `target` was actually removed.
             assertFalse(Files.isDirectory(targetPath));
         }
 
@@ -55,8 +76,9 @@ public class ContinuousIntegrationServerTest {
         /**
          * Requirements: See `cleanBuild` documentation
          * Contract:
-         *      Precondition:    
-         *      Postcondition:   
+         *      Precondition: There exists a `target` and `target/build` directory.
+         *      Postcondition: The `build` directory is removed by `cleanBuild` and
+         *                     `target` is removed by `cleanTarget`.
          */
         public void testBuildDirCleanup() throws NotDirectoryException{
             //Create the directory
@@ -90,8 +112,9 @@ public class ContinuousIntegrationServerTest {
         /**
          * Requirements: See `cleanTarget` documentation
          * Contract:
-         *      Precondition:    
-         *      Postcondition:   
+         *      Precondition: There exists a `target` directory with a text file and
+         *                    a subdirectory `target/testSubDir` also containing a text file.
+         *      Postcondition: `cleanTarget` removes the entire `target` directory with all its contents.
          */
         public void testTargetDirSubCleanup() throws IOException, NotDirectoryException {
             //Creates the directories and files
@@ -127,8 +150,9 @@ public class ContinuousIntegrationServerTest {
         /**
          * Requirements: See `cleanBuild` documentation
          * Contract:
-         *      Precondition:    
-         *      Postcondition:   
+         *      Precondition: There exists a `target/build` directory with a text file and
+         *                    a subdirectory `target/build/testSubDir` also containing a text file.
+         *      Postcondition: `cleanBuild` removes the entire `build` directory with all its contents.
          */
         public void testBuildDirSubCleanup() throws IOException, NotDirectoryException{
             //Creates the directories and files
