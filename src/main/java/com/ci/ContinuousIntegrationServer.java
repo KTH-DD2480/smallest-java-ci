@@ -42,6 +42,7 @@ public class ContinuousIntegrationServer extends AbstractHandler {
     final static String testXMLDIR_PATH = DIR_PATH + "/build/test-results/test/";
 
     final private String TOKEN;
+    final private String MAIN_BRANCH;
 
     private String repOwner;
     private String repName;
@@ -65,8 +66,9 @@ public class ContinuousIntegrationServer extends AbstractHandler {
         testFail
     }
 
-    public ContinuousIntegrationServer(String statusToken) {
+    public ContinuousIntegrationServer(String statusToken, String mainBranch) {
         TOKEN = statusToken;
+        MAIN_BRANCH = mainBranch;
     }
 
     public void handle(String target,
@@ -104,7 +106,7 @@ public class ContinuousIntegrationServer extends AbstractHandler {
 
         try {
             // Update target repository and checkout to the correct branch.
-            repository = GitUtils.updateTarget(repoCloneURL, branch);
+            repository = GitUtils.updateTarget(repoCloneURL, branch, MAIN_BRANCH);
             // Build the cloneld repository
             this.build();
         } catch (Exception e) {
@@ -279,8 +281,9 @@ public class ContinuousIntegrationServer extends AbstractHandler {
         JSONObject conf = new JSONObject(Files.readString(Path.of("config.json")));
         int port = conf.getInt("port");
         String statusToken = conf.getString("status-token");
+        String mainBranch = conf.getString("main-branch");
         Server server = new Server(port);
-        server.setHandler(new ContinuousIntegrationServer(statusToken)); 
+        server.setHandler(new ContinuousIntegrationServer(statusToken, mainBranch)); 
         server.start();
         server.join();
     }

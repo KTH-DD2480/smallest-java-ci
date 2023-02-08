@@ -36,12 +36,14 @@ public class GitUtils {
      * 
      * @param repository the repository to update and checkout.
      * @param branch the name of the branch to checkout. 
+     * @param mainBranch the name of the main branch for the repository.
      * @throws Exception if an error occours when either pulling or branching.
      */
-    public static void pullAndBranch(Git repository, String branch) throws Exception {
+    public static void pullAndBranch(Git repository, String branch, String mainBranch) throws Exception {
         try {
+            repository.checkout().setName(mainBranch).call();
             repository.pull().call();
-            repository.checkout().addPath("origin/" + branch).call();
+            repository.checkout().setName("origin/" + branch).call();
         } catch (Exception e) {
             // TODO: Better error handling?
             e.printStackTrace();
@@ -56,9 +58,10 @@ public class GitUtils {
      * 
      * @param url the clone URL of the repository.
      * @param branch the name of the branch to chekcout.
+     * @param mainBranch the name of the main branch for the repository
      * @throws Exception 
      */
-    public static Git updateTarget(String url, String branch) throws Exception {
+    public static Git updateTarget(String url, String branch, String mainBranch) throws Exception {
         File gitDir = new File(ContinuousIntegrationServer.DIR_PATH + "/.git");
         Git repository;
         try {
@@ -66,7 +69,7 @@ public class GitUtils {
         } catch (IOException e) {
             repository = cloneRepo(url);
         }
-        pullAndBranch(repository, branch);
+        pullAndBranch(repository, branch, mainBranch);
         return repository;
     }
 }
