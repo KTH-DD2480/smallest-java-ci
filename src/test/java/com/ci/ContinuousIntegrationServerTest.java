@@ -10,7 +10,7 @@ import java.io.File;
 
 public class ContinuousIntegrationServerTest {
 
-        ContinuousIntegrationServer DEFAULT = new ContinuousIntegrationServer("");
+        ContinuousIntegrationServer DEFAULT = new ContinuousIntegrationServer("", "master");
         //Example: Typical test syntax
         @Test
         public void verifyNoExceptionsThrown(){
